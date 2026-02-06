@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💘 Valentine</title>
+
+<style>
+  body {
+    margin: 0;
+    height: 100vh;
+    background: linear-gradient(135deg, #ffafbd, #ffc3a0, #ffd6e7);
+    background-size: 200% 200%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: "Segoe UI", sans-serif;
+    overflow: hidden;
+    animation: gradientShift 12s ease infinite;
+  }
+
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .card {
+    background: white;
+    width: 92%;
+    max-width: 700px;
+    padding: 32px 30px 36px;
+    border-radius: 26px;
+    text-align: center;
+    box-shadow: 0 20px 45px rgba(0,0,0,0.2);
+    animation: fadeIn 0.6s ease;
+    position: relative;
+    z-index: 2;
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 26px 55px rgba(0,0,0,0.22);
+  }
+
+  .card::after {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border-radius: 28px;
+    border: 2px solid rgba(255, 77, 109, 0.12);
+    pointer-events: none;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .cardTop {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+  }
+
+  img {
+    width: 130px;
+    margin-bottom: 12px;
+    transition: transform 0.4s ease;
+  }
+
+  h2 {
+    color: #ff4d6d;
+    margin-bottom: 10px;
+  }
+
+  p {
+    font-size: 16px;
+    margin-bottom: 18px;
+    color: #4a2c36;
+  }
+
+  .game {
+    display: none;
+    margin-top: 12px;
+  }
+
+  .game.active {
+    display: block;
+  }
+
+  .gameGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 64px);
+    gap: 12px;
+    justify-content: center;
+    margin: 12px 0 8px;
+  }
+
+  .gameCard {
+    width: 64px;
+    height: 64px;
+    background: #fff0f5;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.2s ease;
+    box-shadow: inset 0 0 0 2px rgba(255, 77, 109, 0.15);
+    user-select: none;
+  }
+
+  .gameCard.flipped {
+    background: #ff4d6d;
+    color: white;
+    transform: scale(1.04);
+  }
+
+  .gameCard.flipped.bonus {
+    background: #f7b955;
+    color: white;
+  }
+
+  .gameCard.matched {
+    background: #ffe2ec;
+    color: #ff4d6d;
+    cursor: default;
+    transform: scale(0.98);
+  }
+
+  .gameCard.bonus {
+    background: #fff6e8;
+    color: #e67e22;
+  }
+
+  .gameStatus {
+    font-size: 13px;
+    color: #aa5f7b;
+    margin: 6px 0 0;
+  }
+
+  .mainBtn[disabled] {
+    cursor: not-allowed;
+    opacity: 0.6;
+    box-shadow: none;
+  }
+
+  button {
+    padding: 12px 22px;
+    border: none;
+    border-radius: 30px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 8px 18px rgba(255, 77, 109, 0.25);
+  }
+
+  .mainBtn {
+    background: #ff4d6d;
+    color: white;
+  }
+
+  .mainBtn:hover {
+    transform: translateY(-2px) scale(1.02);
+  }
+
+  .yes {
+    background: #ff4d6d;
+    color: white;
+    margin-right: 10px;
+  }
+
+  .no {
+    background: #ddd;
+    position: absolute;
+  }
+
+  .iconBtn {
+    background: #fff0f5;
+    color: #ff4d6d;
+    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    box-shadow: none;
+  }
+
+  .iconBtn.active {
+    background: #ff4d6d;
+    color: white;
+  }
+
+  .actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 4px;
+    position: relative;
+    min-height: 52px;
+  }
+
+  .gifts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  .giftBtn {
+    background: #fff0f5;
+    border: none;
+    border-radius: 18px;
+    padding: 10px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 10px 20px rgba(255, 77, 109, 0.18);
+  }
+
+  .giftBtn:hover {
+    transform: translateY(-2px) scale(1.02);
+  }
+
+  .giftBtn img {
+    width: 100%;
+    max-width: 90px;
+    margin: 0 auto;
+    display: block;
+  }
+
+  .backBtn {
+    margin-top: 14px;
+    background: #fff0f5;
+    color: #ff4d6d;
+    box-shadow: none;
+  }
+
+  .backBtn:hover {
+    transform: translateY(-2px);
+  }
+
+  .envelope {
+    background: #fff7fb;
+    border: 1px solid rgba(255, 77, 109, 0.15);
+    border-radius: 18px;
+    padding: 16px;
+    font-size: 15px;
+    color: #4a2c36;
+    line-height: 1.5;
+    box-shadow: inset 0 0 0 2px rgba(255, 77, 109, 0.05);
+  }
+
+  .photoPlaceholderImg {
+    border: 2px dashed rgba(255, 77, 109, 0.35);
+    border-radius: 18px;
+    padding: 6px;
+    margin-top: 8px;
+    color: #aa5f7b;
+    font-size: 14px;
+    width: 260px;
+    height: 340px;
+    object-fit: cover; 
+  }
+
+  .photoFrame {
+    position: relative;
+    margin-top: 12px;
+    border-radius: 22px;
+    padding: 14px;
+    background: #fff7fb;
+    box-shadow: inset 0 0 0 2px rgba(255, 77, 109, 0.12);
+  }
+
+  .photoFrame::before {
+    content: \"\"; 
+    position: absolute;
+    inset: -12px;
+    border-radius: 26px;
+    background:
+      radial-gradient(circle at 18px 18px, #ffb3c7 0 8px, transparent 9px),
+      radial-gradient(circle at calc(100% - 18px) 18px, #ffd1dc 0 8px, transparent 9px),
+      radial-gradient(circle at 18px calc(100% - 18px), #ffd6a5 0 8px, transparent 9px),
+      radial-gradient(circle at calc(100% - 18px) calc(100% - 18px), #c3f0ca 0 8px, transparent 9px);
+    pointer-events: none;
+    opacity: 0.9;
+  }
+
+  .photoFrame::after {
+    content: \"❀\"; 
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #ff7aa2;
+    background: white;
+    padding: 0 8px;
+    font-size: 16px;
+  }
+
+  .card.animate .cardContent > *,
+  .card.animate .actions {
+    animation: contentFade 0.6s ease;
+  }
+
+  @keyframes contentFade {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ❤️ HEART PARTICLES */
+  .heart {
+    position: fixed;
+    bottom: -10px;
+    font-size: 18px;
+    animation: floatUp 6s linear forwards;
+    opacity: 0.7;
+    z-index: 1;
+  }
+
+  @keyframes floatUp {
+    from { transform: translateY(0); opacity: 1; }
+    to { transform: translateY(-110vh); opacity: 0; }
+  }
+
+  @keyframes slideInRight {
+    from { opacity: 0; transform: translateX(40px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .sparkle {
+    position: fixed;
+    width: 8px;
+    height: 8px;
+    background: radial-gradient(circle, #fff 0%, #ffd1dc 60%, transparent 100%);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: sparkle 1.2s ease-out forwards;
+    z-index: 3;
+  }
+
+  @keyframes sparkle {
+    from { transform: scale(0.4); opacity: 1; }
+    to { transform: scale(1.8); opacity: 0; }
+  }
+
+  .photoRow {
+    display: flex;
+    gap: 12px;          /* space between photos */
+    justify-content: center;
+  }
+
+
+</style>
+</head>
+
+<body>
+
+<div class="card" id="card">
+  <div class="cardTop">
+    <button class="iconBtn" id="musicToggle" onclick="toggleMusic()">♪ Music</button>
+  </div>
+  <div class="cardContent" id="cardContent">
+    <img id="img" src="https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif">
+    <h2 id="title">Hey… ❤️</h2>
+    <p id="text">I have something to ask you 👀</p>
+    <div class="game" id="game">
+      <p class="gameStatus" id="gameStatus">Match all the pairs to continue.</p>
+      <div class="gameGrid" id="gameGrid"></div>
+    </div>
+  </div>
+  <div class="actions" id="actions">
+    <button class="mainBtn" id="nextBtn" onclick="nextStep()">Okay 😊</button>
+  </div>
+</div>
+
+<audio id="music" loop>
+  <source src="music.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+let step = 0;
+let gameComplete = false;
+let firstPick = null;
+let lockBoard = false;
+let matches = 0;
+let bonusMatched = false;
+const symbols = ["💖", "🌹", "✨", "🍫"];
+const bonusSymbol = "⭐";
+let musicInitialized = false;
+
+// ❤️ HEART SPAWNER
+setInterval(() => {
+  const heart = document.createElement("div");
+  heart.className = "heart";
+  heart.innerText = "❤️";
+  heart.style.left = Math.random() * 100 + "vw";
+  heart.style.fontSize = Math.random() * 12 + 14 + "px";
+  document.body.appendChild(heart);
+
+  setTimeout(() => heart.remove(), 6000);
+}, 900);
+
+function sparkleBurst(x, y) {
+  for (let i = 0; i < 6; i++) {
+    const sparkle = document.createElement("div");
+    sparkle.className = "sparkle";
+    sparkle.style.left = x + Math.random() * 30 - 15 + "px";
+    sparkle.style.top = y + Math.random() * 30 - 15 + "px";
+    document.body.appendChild(sparkle);
+    setTimeout(() => sparkle.remove(), 1200);
+  }
+}
+
+function animateCard() {
+  const card = document.getElementById("card");
+  card.classList.remove("animate");
+  void card.offsetWidth;
+  card.classList.add("animate");
+}
+
+function initGame() {
+  const game = document.getElementById("game");
+  const grid = document.getElementById("gameGrid");
+  const status = document.getElementById("gameStatus");
+  const deck = [...symbols, ...symbols, bonusSymbol].sort(() => Math.random() - 0.5);
+
+  grid.innerHTML = "";
+  firstPick = null;
+  lockBoard = false;
+  matches = 0;
+  gameComplete = false;
+  bonusMatched = false;
+  status.innerText = "Match all the pairs to continue.";
+
+  deck.forEach((symbol) => {
+    const card = document.createElement("button");
+    card.className = "gameCard";
+    card.type = "button";
+    card.dataset.symbol = symbol;
+    if (symbol === bonusSymbol) {
+      card.classList.add("bonus");
+    }
+    card.addEventListener("click", () => handlePick(card, status));
+    grid.appendChild(card);
+  });
+
+  game.classList.add("active");
+}
+
+function handlePick(card, status) {
+  if (lockBoard || card.classList.contains("flipped") || card.classList.contains("matched")) {
+    return;
+  }
+
+  card.classList.add("flipped");
+  card.innerText = card.dataset.symbol;
+
+  if (card.dataset.symbol === bonusSymbol && !bonusMatched) {
+    card.classList.add("matched");
+    bonusMatched = true;
+    status.innerText = "Bonus star unlocked! Keep matching 💫";
+    checkGameComplete(status);
+    return;
+  }
+
+  if (!firstPick) {
+    firstPick = card;
+    return;
+  }
+
+  if (firstPick.dataset.symbol === card.dataset.symbol) {
+    firstPick.classList.add("matched");
+    card.classList.add("matched");
+    matches += 1;
+    firstPick = null;
+
+    checkGameComplete(status);
+    return;
+  }
+
+  lockBoard = true;
+  setTimeout(() => {
+    firstPick.classList.remove("flipped");
+    firstPick.innerText = "";
+    card.classList.remove("flipped");
+    card.innerText = "";
+    firstPick = null;
+    lockBoard = false;
+  }, 700);
+}
+
+function checkGameComplete(status) {
+  if (matches === symbols.length && bonusMatched) {
+    gameComplete = true;
+    status.innerText = "Nice! You matched them all 💞";
+    const nextBtn = document.getElementById("nextBtn");
+    nextBtn.disabled = false;
+    nextBtn.innerText = "Continue ➡️";
+  }
+}
+
+function nextStep() {
+  step++;
+  const title = document.getElementById("title");
+  const text = document.getElementById("text");
+  const btn = document.getElementById("nextBtn");
+  const img = document.getElementById("img");
+  const card = document.getElementById("card");
+  const actions = document.getElementById("actions");
+  const game = document.getElementById("game");
+  const music = document.getElementById("music");
+  const musicToggle = document.getElementById("musicToggle");
+
+  if (!musicInitialized) {
+    music.volume = 0.4;
+    music.play().then(() => {
+      musicToggle.classList.add("active");
+      musicToggle.innerText = "♪ On";
+    }).catch(() => {
+      musicToggle.classList.remove("active");
+      musicToggle.innerText = "♪ Music";
+    });
+    musicInitialized = true;
+  }
+
+  // reset animation
+  card.style.animation = "none";
+  card.offsetHeight;
+
+  // choose animation based on step
+  if (step === 1 || step === 2) {
+    card.style.animation = "slideInRight 0.6s ease";
+  } else {
+    card.style.animation = "fadeIn 0.6s ease";
+  }
+
+  animateCard();
+
+  if (step === 1) {
+    title.innerText = "Quick question 💗";
+    text.innerText = "Do you like surprises?";
+    btn.innerText = "Let's see 😊";
+    img.src = "https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif";
+    btn.disabled = true;
+    initGame();
+  } else if (step === 2) {
+    game.classList.remove("active");
+    title.innerText = "Be honest 😌";
+    text.innerText = "Do you smile when you see my messages?";
+    btn.innerText = "Yes 💕";
+    img.src = "https://i.ibb.co/wZGnd7mN/image.png";
+    btn.disabled = false;
+  }
+
+  // 📜 STORY PAGE
+  else if (step === 3) {
+    game.classList.remove("active");
+    title.innerText = "A little story… 💌";
+    text.innerText =
+      "I love the way you make ordinary moments feel special — " +
+      "like soft sunsets, warm hugs, and tiny laughs that stay with me.";
+    btn.innerText = "Continue ➡️";
+  }
+
+  else if (step === 4) {
+    game.classList.remove("active");
+    title.innerText = "Important question 💖";
+    text.innerText = "Will you be my Valentine?";
+    btn.style.display = "none";
+
+    img.src = "https://media.giphy.com/media/3oz8xKaR836UJOYeOc/giphy.gif";
+
+    actions.innerHTML = `
+      <button class="yes" onclick="yes()">Yes 💘</button>
+      <button class="no" id="noBtn" onclick="moveNo()">No 😜</button>
+    `;
+  }
+}
+
+function moveNo() {
+  const noBtn = document.getElementById("noBtn");
+
+  noBtn.style.left = Math.random() * 70 + "%";
+  noBtn.style.top = Math.random() * 40 + "%";
+  sparkleBurst(noBtn.offsetLeft, noBtn.offsetTop);
+}
+
+function yes() {
+  const cardContent = document.getElementById("cardContent");
+  const actions = document.getElementById("actions");
+  const musicToggle = document.getElementById("musicToggle");
+
+  if (musicToggle) {
+    musicToggle.style.display = "none";
+  }
+
+  renderGiftSelection();
+  actions.innerHTML = "";
+  animateCard();
+  sparkleBurst(window.innerWidth / 2, window.innerHeight / 2);
+}
+
+function renderGiftSelection() {
+  const cardContent = document.getElementById("cardContent");
+  cardContent.innerHTML = `
+    <img src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExNTJxbzE1Ynk0amlwcm9zZ2ViYXF3dDIzYWozbXJsdXphZ3V2dnVvdSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/MDJ9IbxxvDUQM/giphy.gif" style="width:140px">
+    <h2>Pick a gift 🎁</h2>
+    <p>Each one opens a special page just for you.</p>
+    <div class="gifts">
+      <button class="giftBtn" onclick="openGift(1)" aria-label="Open gift one">
+        <img src="https://i.ibb.co/FLDZqp6p/pngtree-gift-box-red-gift-box-yellow-ribbon-png-image-16021390.avif" alt="Gift one">
+      </button>
+      <button class="giftBtn" onclick="openGift(2)" aria-label="Open gift two">
+        <img src="https://i.ibb.co/FLDZqp6p/pngtree-gift-box-red-gift-box-yellow-ribbon-png-image-16021390.avif" alt="Gift two">
+      </button>
+      <button class="giftBtn" onclick="openGift(3)" aria-label="Open gift three">
+        <img src="https://i.ibb.co/FLDZqp6p/pngtree-gift-box-red-gift-box-yellow-ribbon-png-image-16021390.avif" alt="Gift three">
+      </button>
+    </div>
+  `;
+}
+
+function openGift(index) {
+  const cardContent = document.getElementById("cardContent");
+  const pages = {
+    1: `
+      <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExc20xZjZqeWN6cmE5MGVqaTg5OWh4ZzV4OW5ibGc2cG51M2FrZ2txdyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/qFmdpUKAFZ6rMobzzu/giphy.gif" style="width:120px">
+      <h2>For you 💌</h2>
+      <div class="envelope">
+        You make my days brighter just by being you. Every little moment feels
+        softer and sweeter when I’m with you.
+      </div>
+      <button class="backBtn" onclick="renderGiftSelection()">Back to gifts</button>
+    `,
+    2: ` 
+      <h2>Photo of the one I love 📸</h2> 
+
+      <div class="photoRow">
+      <img src="photo.jpg" class="photoPlaceholderImg">
+      <img src="photo2.jpg" class="photoPlaceholderImg">
+      </div>
+
+      <div class="envelope"> Photo of the most beautiful girl in the world 💕 </div>
+      <button class="backBtn" onclick="renderGiftSelection()">Back to gifts</button>
+    `,
+    3: `
+      <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExNW1tZGJlancwNmdybXF2ZDkxd20yenNkYzMzd2Q1bzNzcWN0dm9iaSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/f9EmXxglhdhAj1bo28/giphy.gif" style="width:120px">
+      <h2>Another note 💖</h2>
+      <div class="envelope">
+        You helped me let go of a past that was once too heavy to carry.
+        With your patience, care and love, you showed me healing can be gentle. I often had trust issues with everyone but you never gave up on me and always helped me move forward. I never knew we would get closer this fast 💗. You are the only one I feel the most comfortable with 💐
+      </div>
+      <button class="backBtn" onclick="renderGiftSelection()">Back to gifts</button>
+    `
+  };
+  cardContent.innerHTML = pages[index] || pages[1];
+  animateCard();
+}
+
+function toggleMusic() {
+  const music = document.getElementById("music");
+  const toggle = document.getElementById("musicToggle");
+  if (music.paused) {
+    music.volume = 0.4;
+    music.play();
+    toggle.classList.add("active");
+    toggle.innerText = "♪ On";
+  } else {
+    music.pause();
+    toggle.classList.remove("active");
+    toggle.innerText = "♪ Music";
+  }
+}
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    const nextBtn = document.getElementById("nextBtn");
+    if (nextBtn && nextBtn.style.display !== "none" && !nextBtn.disabled) {
+      nextStep();
+    }
+  }
+});
+
+document.addEventListener("click", (event) => {
+  if (event.target.closest(".card")) {
+    sparkleBurst(event.clientX, event.clientY);
+  }
+});
+</script>
+
+</body>
+</html>
